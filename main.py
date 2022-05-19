@@ -13,9 +13,10 @@ from pyspark.sql.types import StructType, StructField, IntegerType, StringType, 
 from pyspark.sql import Row
 
 # Constants
-USERNAME = "21lnc2vk2pdy3gr5m4zpmzeei"
-TOKEN = "BQDLsLBbcxQnpbE1v9GdkMxpUHcO3XdZpSFDgZWGkcvp7qF4l_ojB_i8AlBAvGgmEnxC-uDixARYszNH-n9lYa3YdBtLtwhMr_sanWdDkx3bd7e-CCLyz1ht8jS1kO5TCkI2zoETh4pIWsF5H4jbeahUIGtHksxKM_YU"
+TOKEN = "BQAKHD7Ag7aXKjIioO5Ytgli8bSM_zuNPG1xjgxA0fGKEgbC1ymo_RaTytRutlP4wnQqSg1TimHWDizGoOuC-pf3PDBTGP5UF1qfOZNFKrfc6-vSDWpc1UxDnbsFktnYTnJ9XfSoBZ6bz5BnuBI"
+USER = "nuri"
 # Generate token: https://developer.spotify.com/console/get-recently-played/?limit=10&after=&before=
+
 
 def execute_request(url):
     headers = {
@@ -29,11 +30,6 @@ def execute_request(url):
 
 if __name__ == "__main__":
     spark = SparkSession.builder.appName("Spotify-ETL").getOrCreate()
-
-    # Plain data for comparison purposes
-    data = execute_request("https://api.spotify.com/v1/me/player/recently-played?limit=10")
-    # with open("data.json", "w") as f:
-    #     f.write(r.text)
 
     schema = StructType([
         StructField("items", ArrayType(
@@ -63,7 +59,7 @@ if __name__ == "__main__":
 
     udf_execute_request = udf(execute_request)
     requestRow = Row("url")
-    request_df = spark.createDataFrame([requestRow("https://api.spotify.com/v1/me/player/recently-played?limit=10")])
+    request_df = spark.createDataFrame([requestRow("https://api.spotify.com/v1/me/player/recently-played?")])
 
     result_df = request_df \
         .withColumn("result", udf_execute_request(col("url"))) \
@@ -80,7 +76,6 @@ if __name__ == "__main__":
                 col("songs.track.popularity").alias("song_popularity"),
                 col("songs.played_at"))
 
-    result_df.printSchema()
-    result_df.show(truncate=120)
+    result_df.write.parquet("data/" + USER + "_spotify", mode="overwrite")
 
     print("END")
