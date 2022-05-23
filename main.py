@@ -1,19 +1,22 @@
+import json
+
 import requests
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, ArrayType
 from pyspark.sql import Row
-from docs.config import Constants, Schemas
+from utils.config import Constants, Schemas, get_token
 
 # Constants
-USER = "josep"
+USER = "josep"  # This is just a name for the file system, does not need to be spotify user.
+SPOTIFY_TOKEN = get_token()
 
 
 def execute_request(url):
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": "Bearer {token}".format(token=Constants.SPOTIFY_TOKEN)
+        "Authorization": "Bearer {token}".format(token=SPOTIFY_TOKEN)
     }
     r = requests.get(url, headers=headers)
     return r.text
@@ -44,4 +47,4 @@ if __name__ == "__main__":
 
     result_df.write.parquet("data/" + USER + "_spotify", mode="overwrite")
 
-    print("END")
+    print("Execution Finished")
