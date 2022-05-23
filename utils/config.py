@@ -6,7 +6,7 @@ def get_token():
     with open("utils/token.json") as json_file:
         token = json.load(json_file)["token"]
     if token == "insert your spotify token here.":
-        raise ValueError("Remember to add your spotify token in 'utils/token.json'")
+        raise ValueError("Remember to change 'utils/token.json_token' to 'utils/token.json' and add your spotify token")
     else:
         return token
 
