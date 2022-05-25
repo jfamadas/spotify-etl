@@ -1,10 +1,7 @@
 import json
-
 import requests
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import *
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType, ArrayType
-from pyspark.sql import Row
+from pyspark.sql import SparkSession, Row
+from pyspark.sql.functions import udf, from_json, col, explode, element_at
 from utils.config import Constants, Schemas, get_token
 
 # Constants
